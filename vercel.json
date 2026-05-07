@@ -1,0 +1,84 @@
+# ☪️ Halal Checker — Deployment Guide
+
+AI-powered halal ingredient checker. Free to use globally.
+
+## Project Structure
+
+```
+halal-checker/
+├── api/
+│   └── check.js        ← Serverless function (Anthropic API proxy)
+├── public/
+│   └── index.html      ← Frontend app
+├── vercel.json         ← Vercel routing config
+├── package.json
+└── README.md
+```
+
+---
+
+## 🚀 Deploy to Vercel (Step-by-Step)
+
+### Step 1 — Create GitHub Repository
+
+1. Go to https://github.com and sign in (or create free account)
+2. Click **New repository**
+3. Name it: `halal-checker`
+4. Set to **Public**
+5. Click **Create repository**
+6. Upload all files from this folder (drag & drop into GitHub UI)
+
+### Step 2 — Deploy on Vercel
+
+1. Go to https://vercel.com and sign in with your GitHub account
+2. Click **Add New Project**
+3. Select your `halal-checker` repository
+4. Click **Deploy** (Vercel auto-detects the config)
+
+### Step 3 — Add Anthropic API Key (CRITICAL)
+
+1. In Vercel dashboard → your project → **Settings** → **Environment Variables**
+2. Add:
+   - **Name:** `ANTHROPIC_API_KEY`
+   - **Value:** your key from https://console.anthropic.com
+3. Click **Save**
+4. Go to **Deployments** → click **Redeploy** (to apply the env variable)
+
+### Step 4 — Add Custom Domain (Optional)
+
+1. Buy domain e.g. `halalcheck.app` at Namecheap (~$10/yr)
+2. In Vercel → **Settings** → **Domains** → add your domain
+3. Follow DNS instructions (point nameservers to Vercel)
+4. Done — live globally in ~10 minutes
+
+---
+
+## 💰 Running Costs
+
+| Usage | Estimated Cost |
+|-------|---------------|
+| 100 checks/day | ~$0.30/day |
+| 1,000 checks/day | ~$3.00/day |
+| 10,000 checks/day | ~$30.00/day |
+
+Vercel hosting: **Free** (Hobby plan covers this easily)
+
+---
+
+## 🌍 Target Markets
+- 🇮🇩 Indonesia (MUI certification reference)
+- 🇲🇾 Malaysia (JAKIM certification reference)
+- 🇸🇬 Singapore (MUIS certification reference)
+- 🇬🇧 UK (HMC/HFA certification reference)
+
+---
+
+## 📱 Features
+- ✅ Text ingredient input
+- ✅ Photo/image upload
+- ✅ HALAL / HARAM / MASHBOOH verdict
+- ✅ Per-ingredient breakdown
+- ✅ WhatsApp share button
+- ✅ Copy result to clipboard
+- ✅ Mobile responsive
+- ✅ No user login required
