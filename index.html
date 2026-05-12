@@ -1,77 +1,397 @@
-exports.handler = async function(event, context) {
-  var headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halal Checker - AI-powered ingredient scanner</title>
+<meta name="description" content="Instantly check if any food product is Halal, Haram or Mashbooh. Free to use. Cek status halal produk makanan secara gratis.">
+<meta name="theme-color" content="#0f1117">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #22c55e; --green-dark: #16a34a; --red: #ef4444; --amber: #f59e0b;
+    --bg: #0f1117; --surface: #1a1f2e; --border: rgba(255,255,255,0.08);
+    --text: #e8e0d4; --muted: rgba(255,255,255,0.4);
+  }
+  body { min-height: 100vh; background: var(--bg); font-family: Georgia, serif; color: var(--text); }
+  header {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 24px 30px; text-align: center; position: relative; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(34,197,94,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .lang-toggle {
+    position: absolute; top: 16px; right: 16px;
+    display: flex; background: rgba(255,255,255,0.06); border-radius: 20px;
+    padding: 3px; border: 1px solid var(--border); z-index: 10;
+  }
+  .lang-btn {
+    padding: 5px 12px; border: none; border-radius: 16px; cursor: pointer;
+    font-size: 12px; font-family: Georgia, serif; font-weight: 600;
+    background: transparent; color: var(--muted); transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--green); color: #0f1117; }
+  .logo { font-size: 42px; margin-bottom: 10px; }
+  header h1 { font-size: 30px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  header p { font-size: 14px; color: var(--muted); font-style: italic; }
+  .badges { display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--muted); }
+  .container { max-width: 580px; margin: 0 auto; padding: 30px 20px 60px; }
+  .mode-toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 24px; border: 1px solid var(--border); }
+  .mode-btn { flex: 1; padding: 11px 16px; border: none; border-radius: 9px; cursor: pointer; font-size: 14px; font-family: Georgia, serif; font-weight: 600; transition: all 0.2s; background: transparent; color: var(--muted); }
+  .mode-btn.active { background: var(--green); color: #0f1117; }
+  .input-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; color: var(--text); font-size: 14px; font-family: Georgia, serif; resize: vertical; outline: none; line-height: 1.6; margin-bottom: 20px; transition: border-color 0.2s; min-height: 130px; }
+  textarea:focus { border-color: rgba(34,197,94,0.4); }
+  textarea::placeholder { color: rgba(255,255,255,0.2); }
+  .drop-zone { border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.03); transition: all 0.2s; margin-bottom: 20px; }
+  .drop-zone:hover { border-color: var(--green); background: rgba(34,197,94,0.05); }
+  .dz-icon { font-size: 42px; margin-bottom: 12px; }
+  .dz-title { font-size: 15px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .dz-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
+  #preview-img { max-width: 100%; max-height: 280px; border-radius: 8px; display: block; margin: 0 auto; }
+  #remove-img { margin-top: 12px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--red); border-radius: 8px; padding: 6px 16px; cursor: pointer; font-size: 13px; font-family: Georgia, serif; }
+  #check-btn { width: 100%; padding: 16px; background: var(--green); border: none; border-radius: 12px; color: #0f1117; font-size: 16px; font-weight: 700; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; margin-bottom: 24px; }
+  #check-btn:disabled { background: rgba(34,197,94,0.25); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+  #check-btn:not(:disabled):hover { background: var(--green-dark); }
+  .error-box { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); border-radius: 12px; padding: 14px 16px; color: var(--red); font-size: 14px; margin-bottom: 20px; display: none; }
+  .result-box { border-radius: 16px; padding: 26px 22px; margin-bottom: 24px; display: none; }
+  .verdict-badge { text-align: center; margin-bottom: 20px; }
+  .verdict-pill { display: inline-flex; align-items: center; gap: 10px; border: 2px solid; border-radius: 50px; padding: 9px 28px; }
+  .verdict-text { font-size: 24px; font-weight: 800; letter-spacing: 2px; }
+  .confidence { margin-top: 8px; font-size: 12px; color: var(--muted); }
+  .summary-text { text-align: center; font-size: 15px; color: rgba(255,255,255,0.8); margin: 0 0 20px; line-height: 1.6; font-style: italic; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 0 0 20px; }
+  .section-title { font-size: 12px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .flagged-item { border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
+  .flagged-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .flagged-name { font-weight: 700; font-size: 14px; color: #fff; }
+  .flagged-severity { font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+  .flagged-reason { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .safe-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .safe-tag { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 20px; padding: 4px 12px; font-size: 13px; color: #86efac; }
+  .advice-box { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 12px 14px; font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; border-left: 3px solid; }
+  .share-row { display: flex; gap: 8px; margin-top: 16px; }
+  .share-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--muted); font-size: 13px; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; }
+  .share-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .disclaimer { text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); margin-top: 12px; line-height: 1.7; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.6); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #text-panel { display: block; }
+  #image-panel { display: none; }
+  @media (max-width: 480px) { header h1 { font-size: 24px; } .container { padding: 20px 16px 50px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-id" onclick="setLang('id')">ID</button>
+  </div>
+  <div class="logo">&#9775;</div>
+  <h1 id="hdr-title">Halal Checker</h1>
+  <p id="hdr-sub">AI-powered Islamic dietary compliance - free to use</p>
+  <div class="badges">
+    <span class="badge">Indonesia</span>
+    <span class="badge">Malaysia</span>
+    <span class="badge">Singapore</span>
+    <span class="badge">UK</span>
+    <span class="badge">Worldwide</span>
+  </div>
+</header>
+
+<div class="container">
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-text" onclick="setMode('text')" id="mode-text-btn">Type Ingredients</button>
+    <button class="mode-btn" id="btn-image" onclick="setMode('image')" id="mode-image-btn">Upload Photo</button>
+  </div>
+
+  <div id="text-panel">
+    <label class="input-label" id="lbl-ingredients">Paste Ingredients List</label>
+    <textarea id="ingredients-text" rows="6" placeholder="e.g. Sugar, Wheat Flour, Vegetable Oil, Emulsifier (E471), Natural Flavouring, Gelatin..."></textarea>
+  </div>
+
+  <div id="image-panel">
+    <label class="input-label" id="lbl-photo">Upload Ingredients Label Photo</label>
+    <div class="drop-zone" id="drop-zone" onclick="triggerFile()" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
+      <div id="dz-placeholder">
+        <div class="dz-icon">&#128247;</div>
+        <div class="dz-title" id="dz-title-text">Tap to upload or take photo</div>
+        <div class="dz-sub" id="dz-sub-text">JPG, PNG, WEBP supported</div>
+      </div>
+      <div id="dz-preview" style="display:none;">
+        <img id="preview-img" src="" alt="Label preview" />
+        <button id="remove-img" onclick="removeImage(event)">Remove and Retake</button>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="handleFile(this.files[0])" />
+  </div>
+
+  <button id="check-btn" onclick="runCheck()">Check Halal Status</button>
+  <div id="error-box" class="error-box"></div>
+  <div id="result-box" class="result-box"></div>
+  <p class="disclaimer" id="disclaimer-text">For guidance only. Consult a certified Islamic scholar or look for official Halal certification: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapore), HMC/HFA (UK)</p>
+</div>
+
+<script>
+  var currentMode = 'text';
+  var currentLang = 'en';
+  var imageData = null;
+  var imageMediaType = null;
+  var lastResult = null;
+
+  var TRANSLATIONS = {
+    en: {
+      headerSub: 'AI-powered Islamic dietary compliance - free to use',
+      modeText: 'Type Ingredients',
+      modeImage: 'Upload Photo',
+      lblIngredients: 'Paste Ingredients List',
+      lblPhoto: 'Upload Ingredients Label Photo',
+      dzTitle: 'Tap to upload or take photo',
+      dzSub: 'JPG, PNG, WEBP supported',
+      removeBtn: 'Remove and Retake',
+      checkBtn: 'Check Halal Status',
+      analysing: 'Analysing...',
+      placeholder: 'e.g. Sugar, Wheat Flour, Vegetable Oil, Emulsifier (E471), Natural Flavouring, Gelatin...',
+      confidence: 'Confidence',
+      flagged: 'Flagged Ingredients',
+      permissible: 'Permissible Ingredients',
+      shareWa: 'Share via WhatsApp',
+      copyResult: 'Copy Result',
+      copied: 'Result copied!',
+      errNoText: 'Please paste an ingredients list first.',
+      errNoImage: 'Please upload a photo of the ingredients label.',
+      errConnection: 'Connection error. Please try again.',
+      disclaimer: 'For guidance only. Consult a certified Islamic scholar or look for official Halal certification: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapore), HMC/HFA (UK)',
+      waMsg: 'Halal Checker Result\n\nStatus: ',
+      waEnd: '\n\nCheck your food at our Halal Checker app!',
+      aiLang: 'English'
+    },
+    id: {
+      headerSub: 'Pemeriksa kehalalan makanan bertenaga AI - gratis digunakan',
+      modeText: 'Ketik Bahan-bahan',
+      modeImage: 'Upload Foto',
+      lblIngredients: 'Tempel Daftar Bahan-bahan',
+      lblPhoto: 'Upload Foto Label Bahan-bahan',
+      dzTitle: 'Ketuk untuk upload atau ambil foto',
+      dzSub: 'JPG, PNG, WEBP didukung',
+      removeBtn: 'Hapus dan Foto Ulang',
+      checkBtn: 'Cek Status Halal',
+      analysing: 'Sedang menganalisis...',
+      placeholder: 'cth. Gula, Tepung Terigu, Minyak Sayur, Pengemulsi (E471), Perisa Alami, Gelatin...',
+      confidence: 'Tingkat Keyakinan',
+      flagged: 'Bahan yang Dipertanyakan',
+      permissible: 'Bahan yang Diperbolehkan',
+      shareWa: 'Bagikan via WhatsApp',
+      copyResult: 'Salin Hasil',
+      copied: 'Hasil disalin!',
+      errNoText: 'Harap tempel daftar bahan-bahan terlebih dahulu.',
+      errNoImage: 'Harap upload foto label bahan-bahan.',
+      errConnection: 'Kesalahan koneksi. Silakan coba lagi.',
+      disclaimer: 'Hanya sebagai panduan. Konsultasikan dengan ulama bersertifikat atau cari sertifikasi Halal resmi: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapura), HMC/HFA (UK)',
+      waMsg: 'Hasil Cek Halal\n\nStatus: ',
+      waEnd: '\n\nCek makanan kamu di aplikasi Halal Checker kami!',
+      aiLang: 'Bahasa Indonesia'
+    }
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: headers, body: '' };
+  var STATUS_CFG = {
+    HALAL:    { color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)'  },
+    HARAM:    { color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)'  },
+    MASHBOOH: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' }
+  };
+
+  function setLang(lang) {
+    currentLang = lang;
+    var t = TRANSLATIONS[lang];
+    document.getElementById('btn-en').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+    document.getElementById('btn-id').className = 'lang-btn' + (lang === 'id' ? ' active' : '');
+    document.getElementById('hdr-sub').textContent = t.headerSub;
+    document.getElementById('btn-text').textContent = t.modeText;
+    document.getElementById('btn-image').textContent = t.modeImage;
+    document.getElementById('lbl-ingredients').textContent = t.lblIngredients;
+    document.getElementById('lbl-photo').textContent = t.lblPhoto;
+    document.getElementById('dz-title-text').textContent = t.dzTitle;
+    document.getElementById('dz-sub-text').textContent = t.dzSub;
+    document.getElementById('remove-img').textContent = t.removeBtn;
+    document.getElementById('check-btn').textContent = t.checkBtn;
+    document.getElementById('ingredients-text').placeholder = t.placeholder;
+    document.getElementById('disclaimer-text').textContent = t.disclaimer;
+    document.documentElement.lang = lang;
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('text-panel').style.display = mode === 'text' ? 'block' : 'none';
+    document.getElementById('image-panel').style.display = mode === 'image' ? 'block' : 'none';
+    document.getElementById('btn-text').className = 'mode-btn' + (mode === 'text' ? ' active' : '');
+    document.getElementById('btn-image').className = 'mode-btn' + (mode === 'image' ? ' active' : '');
+    clearResult();
   }
 
-  try {
-    var body = JSON.parse(event.body);
-    var content = body.content;
-    var lang = body.lang || 'en';
+  function triggerFile() { if (!imageData) document.getElementById('file-input').click(); }
 
-    if (!content) {
-      return { statusCode: 400, headers: headers, body: JSON.stringify({ error: 'Missing content' }) };
-    }
+  function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var dataUrl = e.target.result;
+      imageData = dataUrl.split(',')[1];
+      imageMediaType = file.type;
+      document.getElementById('preview-img').src = dataUrl;
+      document.getElementById('dz-placeholder').style.display = 'none';
+      document.getElementById('dz-preview').style.display = 'block';
+      document.getElementById('drop-zone').style.cursor = 'default';
+      clearResult();
+    };
+    reader.readAsDataURL(file);
+  }
 
-    var systemPromptEN = 'You are an expert Islamic dietary compliance (Halal) checker. Analyse the provided ingredients or food product information and determine if the product is Halal, Haram (forbidden), or Mashbooh (doubtful/unclear) according to mainstream Islamic dietary law.\n\nRespond ONLY with a JSON object in this exact format:\n{\n  "status": "HALAL" | "HARAM" | "MASHBOOH",\n  "confidence": "HIGH" | "MEDIUM" | "LOW",\n  "summary": "One sentence overall verdict in English",\n  "flagged": [\n    { "ingredient": "ingredient name", "reason": "why it is flagged in English", "severity": "HARAM" | "MASHBOOH" }\n  ],\n  "safe": ["list", "of", "clearly", "halal", "ingredients"],\n  "advice": "Practical advice in English in 1-2 sentences"\n}\n\nRules:\n- Pork and all pork derivatives = HARAM\n- Alcohol and intoxicants = HARAM\n- Blood and blood products = HARAM\n- E120, E441, E542, E631, E635, E904 = flag these\n- Gelatin without halal certification = MASHBOOH\n- Natural flavours without source = MASHBOOH\n- Vanilla extract = MASHBOOH\n- Enzymes without source = MASHBOOH\n- Plant-based or fish ingredients = HALAL\n\nAlways respond with valid JSON only. No markdown, no preamble.';
+  function removeImage(e) {
+    e.stopPropagation();
+    imageData = null; imageMediaType = null;
+    document.getElementById('preview-img').src = '';
+    document.getElementById('dz-placeholder').style.display = 'block';
+    document.getElementById('dz-preview').style.display = 'none';
+    document.getElementById('drop-zone').style.cursor = 'pointer';
+    document.getElementById('file-input').value = '';
+    clearResult();
+  }
 
-    var systemPromptID = 'Anda adalah ahli pemeriksa kehalalan makanan berdasarkan syariat Islam. Analisa bahan-bahan makanan yang diberikan dan tentukan apakah produk tersebut Halal, Haram, atau Mashbooh (meragukan) berdasarkan hukum Islam arus utama.\n\nBerikan respons HANYA dalam format JSON berikut:\n{\n  "status": "HALAL" | "HARAM" | "MASHBOOH",\n  "confidence": "HIGH" | "MEDIUM" | "LOW",\n  "summary": "Satu kalimat kesimpulan dalam Bahasa Indonesia",\n  "flagged": [\n    { "ingredient": "nama bahan", "reason": "alasan dipertanyakan dalam Bahasa Indonesia", "severity": "HARAM" | "MASHBOOH" }\n  ],\n  "safe": ["daftar", "bahan", "yang", "halal"],\n  "advice": "Saran praktis dalam Bahasa Indonesia 1-2 kalimat"\n}\n\nAturan:\n- Babi dan semua turunannya = HARAM\n- Alkohol dan minuman memabukkan = HARAM\n- Darah dan produk darah = HARAM\n- E120, E441, E542, E631, E635, E904 = tandai sebagai mencurigakan\n- Gelatin tanpa sertifikasi halal = MASHBOOH\n- Perisa alami tanpa keterangan sumber = MASHBOOH\n- Ekstrak vanila = MASHBOOH\n- Enzim tanpa keterangan sumber = MASHBOOH\n- Bahan nabati atau ikan = HALAL\n\nSelalu berikan respons dalam JSON yang valid saja. Tidak ada markdown, tidak ada pembuka.';
+  function onDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').style.borderColor = '#22c55e'; }
+  function onDragLeave() { document.getElementById('drop-zone').style.borderColor = 'rgba(255,255,255,0.15)'; }
+  function onDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').style.borderColor = 'rgba(255,255,255,0.15)';
+    handleFile(e.dataTransfer.files[0]);
+  }
 
-    var systemPrompt = lang === 'id' ? systemPromptID : systemPromptEN;
+  function clearResult() {
+    document.getElementById('result-box').style.display = 'none';
+    document.getElementById('error-box').style.display = 'none';
+  }
 
-    var userText = lang === 'id'
-      ? 'Periksa apakah bahan-bahan ini halal menurut syariat Islam:'
-      : 'Check if these ingredients are Halal according to Islamic dietary law:';
+  function showError(msg) {
+    var el = document.getElementById('error-box');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
 
-    var messageContent;
-    if (content.type === 'image') {
-      messageContent = [
-        { type: 'image', source: { type: 'base64', media_type: content.mediaType, data: content.data } },
-        { type: 'text', text: lang === 'id'
-          ? 'Analisa label bahan-bahan pada gambar ini dan periksa apakah produk ini halal menurut syariat Islam.'
-          : 'Analyse the ingredients label in this image and check if this product is Halal according to Islamic dietary law.' }
-      ];
+  function runCheck() {
+    clearResult();
+    var t = TRANSLATIONS[currentLang];
+    var content;
+
+    if (currentMode === 'text') {
+      var text = document.getElementById('ingredients-text').value.trim();
+      if (!text) { showError(t.errNoText); return; }
+      content = { type: 'text', text: text };
     } else {
-      messageContent = [
-        { type: 'text', text: userText + '\n\n' + content.text }
-      ];
+      if (!imageData) { showError(t.errNoImage); return; }
+      content = { type: 'image', data: imageData, mediaType: imageMediaType };
     }
 
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
+    var btn = document.getElementById('check-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>' + t.analysing;
+
+    fetch('/api/check', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: messageContent }]
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content, lang: currentLang })
+    })
+    .then(function(resp) { return resp.json(); })
+    .then(function(result) {
+      if (result.error) { showError(result.error); return; }
+      lastResult = result;
+      renderResult(result);
+    })
+    .catch(function(err) {
+      showError(t.errConnection);
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = t.checkBtn;
     });
+  }
 
-    var data = await response.json();
-    if (data.error) {
-      return { statusCode: 500, headers: headers, body: JSON.stringify({ error: data.error.message }) };
+  function renderResult(r) {
+    var t = TRANSLATIONS[currentLang];
+    var cfg = STATUS_CFG[r.status] || STATUS_CFG.MASHBOOH;
+    var html = '<div style="background:' + cfg.bg + '; border:1px solid ' + cfg.border + '; border-radius:16px; padding:26px 22px; animation:fadeIn 0.4s ease;">';
+    html += '<div class="verdict-badge"><div class="verdict-pill" style="border-color:' + cfg.color + '; background:' + cfg.bg + ';">';
+    html += '<span class="verdict-text" style="color:' + cfg.color + ';">' + r.status + '</span></div>';
+    html += '<div class="confidence">' + t.confidence + ': <span style="color:' + cfg.color + '; font-weight:600;">' + r.confidence + '</span></div></div>';
+    html += '<p class="summary-text">' + r.summary + '</p><hr>';
+
+    if (r.flagged && r.flagged.length > 0) {
+      html += '<div class="section-title">' + t.flagged + '</div>';
+      r.flagged.forEach(function(f) {
+        var isHaram = f.severity === 'HARAM';
+        var fbg = isHaram ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
+        var fb = isHaram ? 'rgba(239,68,68,0.25)' : 'rgba(245,158,11,0.25)';
+        var fc = isHaram ? '#ef4444' : '#f59e0b';
+        html += '<div class="flagged-item" style="background:' + fbg + '; border:1px solid ' + fb + ';">';
+        html += '<div class="flagged-header"><span class="flagged-name">' + f.ingredient + '</span>';
+        html += '<span class="flagged-severity" style="color:' + fc + ';">' + f.severity + '</span></div>';
+        html += '<div class="flagged-reason">' + f.reason + '</div></div>';
+      });
+      html += '<div style="margin-bottom:20px;"></div>';
     }
 
-    var raw = data.content && data.content.find(function(b) { return b.type === 'text'; });
-    var text = raw ? raw.text : '';
-    var result = JSON.parse(text.replace(/```json|```/g, '').trim());
-    return { statusCode: 200, headers: headers, body: JSON.stringify(result) };
+    if (r.safe && r.safe.length > 0) {
+      html += '<div class="section-title">' + t.permissible + '</div><div class="safe-tags">';
+      r.safe.forEach(function(s) { html += '<span class="safe-tag">' + s + '</span>'; });
+      html += '</div>';
+    }
 
-  } catch (err) {
-    return { statusCode: 500, headers: headers, body: JSON.stringify({ error: err.message || 'Analysis failed' }) };
+    if (r.advice) {
+      html += '<div class="advice-box" style="border-left-color:' + cfg.color + ';">' + r.advice + '</div>';
+    }
+
+    html += '<div class="share-row">';
+    html += '<button class="share-btn" onclick="shareWhatsApp()">' + t.shareWa + '</button>';
+    html += '<button class="share-btn" onclick="copyResult()">' + t.copyResult + '</button>';
+    html += '</div></div>';
+
+    var box = document.getElementById('result-box');
+    box.innerHTML = html;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-};
+
+  function copyResult() {
+    if (!lastResult) return;
+    var t = TRANSLATIONS[currentLang];
+    var r = lastResult;
+    var text = 'HALAL CHECKER RESULT\nStatus: ' + r.status + ' (' + r.confidence + ')\n' + r.summary + '\n';
+    if (r.flagged && r.flagged.length) {
+      r.flagged.forEach(function(f) { text += '\n- ' + f.ingredient + ': ' + f.reason; });
+    }
+    if (r.advice) text += '\n\n' + r.advice;
+    text += '\n\nChecked via Halal Checker app';
+    navigator.clipboard.writeText(text).then(function() { alert(t.copied); });
+  }
+
+  function shareWhatsApp() {
+    if (!lastResult) return;
+    var t = TRANSLATIONS[currentLang];
+    var r = lastResult;
+    var msg = encodeURIComponent(t.waMsg + r.status + '\n' + r.summary + t.waEnd);
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  }
+
+  // Auto-detect browser language
+  var browserLang = navigator.language || navigator.userLanguage || 'en';
+  if (browserLang.toLowerCase().startsWith('id')) {
+    setLang('id');
+  }
+</script>
+</body>
+</html>
