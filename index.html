@@ -112,6 +112,25 @@
   .no-reviews { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; font-style: italic; }
 
   .disclaimer { text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); margin-top: 24px; line-height: 1.7; }
+
+  /* PRODUCT SEARCH */
+  .product-search-box { background: rgba(255,200,0,0.05); border: 1px solid rgba(255,200,0,0.15); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+  .product-search-box label { display: block; font-size: 12px; color: rgba(255,200,0,0.7); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .search-row { display: flex; gap: 8px; }
+  .product-search-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,200,0,0.2); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: Georgia, serif; outline: none; transition: border-color 0.2s; }
+  .product-search-input:focus { border-color: rgba(255,200,0,0.5); }
+  .product-search-input::placeholder { color: rgba(255,255,255,0.2); }
+  .search-btn { padding: 10px 16px; background: rgba(255,200,0,0.15); border: 1px solid rgba(255,200,0,0.3); border-radius: 8px; color: rgba(255,200,0,0.8); font-size: 13px; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .search-btn:hover { background: rgba(255,200,0,0.25); }
+  .prev-reviews-box { margin-top: 12px; display: none; }
+  .prev-reviews-title { font-size: 13px; color: rgba(255,200,0,0.7); margin-bottom: 10px; }
+  .prev-review-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .prev-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .prev-review-product { font-weight: 700; font-size: 13px; color: #fff; }
+  .prev-review-stars { color: var(--amber); font-size: 13px; margin-bottom: 4px; }
+  .prev-review-comment { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .prev-review-meta { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+  .no-prev-reviews { font-size: 13px; color: var(--muted); font-style: italic; padding: 8px 0; }
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.6); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -140,6 +159,19 @@
 </header>
 
 <div class="container">
+  <!-- PRODUCT SEARCH -->
+  <div class="product-search-box">
+    <label id="lbl-search">Search previous reviews by product name</label>
+    <div class="search-row">
+      <input class="product-search-input" id="product-search-input" type="text" placeholder="e.g. Cadbury Dairy Milk, Indomie, KitKat..." />
+      <button class="search-btn" onclick="searchProduct()" id="search-btn">Search</button>
+    </div>
+    <div class="prev-reviews-box" id="prev-reviews-box">
+      <div class="prev-reviews-title" id="prev-reviews-title"></div>
+      <div id="prev-reviews-list"></div>
+    </div>
+  </div>
+
   <div class="mode-toggle">
     <button class="mode-btn active" id="btn-text" onclick="setMode('text')">Type Ingredients</button>
     <button class="mode-btn" id="btn-image" onclick="setMode('image')">Upload Photo</button>
@@ -215,7 +247,13 @@
       submitReview: 'Submit Review', reviewSuccess: 'Thank you for your review!',
       communityReviews: 'Community Reviews', loadMore: 'Load more reviews',
       noReviews: 'No reviews yet. Be the first!', rateProduct: 'Rate this product:',
-      waMsg: 'Halal Checker Result\n\nStatus: ', waEnd: '\n\nCheck your food at Halal Checker!'
+      waMsg: 'Halal Checker Result\n\nStatus: ', waEnd: '\n\nCheck your food at Halal Checker!',
+      searchLabel: 'Search previous reviews by product name',
+      searchPlaceholder: 'e.g. Cadbury Dairy Milk, Indomie, KitKat...',
+      searchBtn: 'Search',
+      searchFound: 'Community reviews found for',
+      searchNone: 'No previous reviews found. Be the first to check and review this product!',
+      searching: 'Searching...'
     },
     id: {
       headerSub: 'Pemeriksa kehalalan makanan bertenaga AI - gratis digunakan',
@@ -235,7 +273,13 @@
       submitReview: 'Kirim Ulasan', reviewSuccess: 'Terima kasih atas ulasan Anda!',
       communityReviews: 'Ulasan Komunitas', loadMore: 'Muat lebih banyak ulasan',
       noReviews: 'Belum ada ulasan. Jadilah yang pertama!', rateProduct: 'Beri nilai produk ini:',
-      waMsg: 'Hasil Cek Halal\n\nStatus: ', waEnd: '\n\nCek makanan kamu di Halal Checker!'
+      waMsg: 'Hasil Cek Halal\n\nStatus: ', waEnd: '\n\nCek makanan kamu di Halal Checker!',
+      searchLabel: 'Cari ulasan produk berdasarkan nama',
+      searchPlaceholder: 'cth. Indomie Goreng, KitKat, Cadbury...',
+      searchBtn: 'Cari',
+      searchFound: 'Ulasan komunitas ditemukan untuk',
+      searchNone: 'Belum ada ulasan untuk produk ini. Jadilah yang pertama mengecek dan memberi ulasan!',
+      searching: 'Mencari...'
     }
   };
 
@@ -263,6 +307,9 @@
     document.getElementById('disclaimer-text').textContent = t.disclaimer;
     document.getElementById('reviews-title').textContent = t.communityReviews;
     document.getElementById('no-reviews-text').textContent = t.noReviews;
+    document.getElementById('lbl-search').textContent = t.searchLabel;
+    document.getElementById('product-search-input').placeholder = t.searchPlaceholder;
+    document.getElementById('search-btn').textContent = t.searchBtn;
     document.documentElement.lang = lang;
   }
 
@@ -489,7 +536,89 @@
     });
   }
 
-  function loadReviews() {
+  function searchProduct() {
+    var t = T[currentLang];
+    var query = document.getElementById('product-search-input').value.trim();
+    if (!query) return;
+
+    var btn = document.getElementById('search-btn');
+    btn.textContent = t.searching;
+    btn.disabled = true;
+
+    // Search Supabase using case-insensitive ILIKE
+    fetch(SUPABASE_URL + '/rest/v1/reviews?select=*&product_name=ilike.*' + encodeURIComponent(query) + '*&order=created_at.desc&limit=10', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var box = document.getElementById('prev-reviews-box');
+      var list = document.getElementById('prev-reviews-list');
+      var title = document.getElementById('prev-reviews-title');
+      box.style.display = 'block';
+      list.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        title.textContent = '';
+        list.innerHTML = '<div class="no-prev-reviews">' + t.searchNone + '</div>';
+      } else {
+        title.textContent = t.searchFound + ' "' + query + '" (' + data.length + ')';
+
+        // Calculate average rating
+        var totalRating = 0;
+        data.forEach(function(r) { totalRating += r.rating || 0; });
+        var avgRating = Math.round(totalRating / data.length);
+
+        // Show average rating summary
+        var stars = '';
+        for (var i = 1; i <= 5; i++) { stars += i <= avgRating ? '&#9733;' : '&#9734;'; }
+
+        // Count statuses
+        var statusCount = {};
+        data.forEach(function(r) { statusCount[r.halal_status] = (statusCount[r.halal_status] || 0) + 1; });
+        var mostCommon = Object.keys(statusCount).sort(function(a,b) { return statusCount[b]-statusCount[a]; })[0];
+
+        var cfg = STATUS_CFG[mostCommon] || STATUS_CFG.MASHBOOH;
+        var summary = '<div style="background:' + cfg.bg + '; border:1px solid ' + cfg.border + '; border-radius:10px; padding:12px 14px; margin-bottom:12px;">';
+        summary += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
+        summary += '<span style="font-weight:700; color:' + cfg.color + '; font-size:15px;">' + mostCommon + '</span>';
+        summary += '<span style="color:var(--amber); font-size:16px;">' + stars + '</span></div>';
+        summary += '<div style="font-size:12px; color:var(--muted);">' + data.length + ' review' + (data.length > 1 ? 's' : '') + '</div></div>';
+        list.innerHTML = summary;
+
+        data.forEach(function(r) {
+          var rStars = '';
+          for (var i = 1; i <= 5; i++) { rStars += i <= r.rating ? '&#9733;' : '&#9734;'; }
+          var date = new Date(r.created_at).toLocaleDateString();
+          var card = document.createElement('div');
+          card.className = 'prev-review-card';
+          card.innerHTML =
+            '<div class="prev-review-header">' +
+            '<span class="prev-review-product">' + escHtml(r.product_name) + '</span>' +
+            '<span class="review-status status-' + r.halal_status + '">' + r.halal_status + '</span>' +
+            '</div>' +
+            '<div class="prev-review-stars">' + rStars + '</div>' +
+            (r.comment ? '<div class="prev-review-comment">' + escHtml(r.comment) + '</div>' : '') +
+            '<div class="prev-review-meta">' + (r.country ? escHtml(r.country) + ' &middot; ' : '') + date + '</div>';
+          list.appendChild(card);
+        });
+      }
+    })
+    .catch(function() {
+      document.getElementById('prev-reviews-box').style.display = 'block';
+      document.getElementById('prev-reviews-list').innerHTML = '<div class="no-prev-reviews">Search failed. Please try again.</div>';
+    })
+    .finally(function() {
+      btn.textContent = t.searchBtn;
+      btn.disabled = false;
+    });
+  }
+
+  // Allow pressing Enter in search box
+  document.getElementById('product-search-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchProduct();
+  });
+
+  
     reviewsOffset = 0;
     fetch(SUPABASE_URL + '/rest/v1/reviews?select=*&order=created_at.desc&limit=' + reviewsLimit, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
