@@ -30,11 +30,7 @@
     display: flex; background: rgba(255,255,255,0.06); border-radius: 20px;
     padding: 3px; border: 1px solid var(--border); z-index: 10;
   }
-  .lang-btn {
-    padding: 5px 12px; border: none; border-radius: 16px; cursor: pointer;
-    font-size: 12px; font-family: Georgia, serif; font-weight: 600;
-    background: transparent; color: var(--muted); transition: all 0.2s;
-  }
+  .lang-btn { padding: 5px 12px; border: none; border-radius: 16px; cursor: pointer; font-size: 12px; font-family: Georgia, serif; font-weight: 600; background: transparent; color: var(--muted); transition: all 0.2s; }
   .lang-btn.active { background: var(--green); color: #0f1117; }
   .logo { font-size: 42px; margin-bottom: 10px; }
   header h1 { font-size: 30px; font-weight: 700; color: #fff; margin-bottom: 6px; }
@@ -79,7 +75,43 @@
   .share-row { display: flex; gap: 8px; margin-top: 16px; }
   .share-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--muted); font-size: 13px; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; }
   .share-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .disclaimer { text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); margin-top: 12px; line-height: 1.7; }
+
+  /* REVIEW FORM */
+  .review-form { margin-top: 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .review-form h3 { font-size: 15px; color: #fff; margin-bottom: 16px; }
+  .star-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .star { font-size: 28px; cursor: pointer; color: rgba(255,255,255,0.2); transition: all 0.15s; line-height: 1; }
+  .star.active { color: var(--amber); }
+  .review-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .review-input { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: Georgia, serif; outline: none; transition: border-color 0.2s; }
+  .review-input:focus { border-color: rgba(34,197,94,0.4); }
+  .review-input::placeholder { color: rgba(255,255,255,0.2); }
+  textarea.review-input { min-height: 80px; resize: vertical; }
+  .submit-review-btn { width: 100%; padding: 12px; background: var(--green); border: none; border-radius: 10px; color: #0f1117; font-size: 14px; font-weight: 700; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; }
+  .submit-review-btn:disabled { background: rgba(34,197,94,0.25); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+  .submit-review-btn:not(:disabled):hover { background: var(--green-dark); }
+  .review-success { text-align: center; padding: 12px; color: var(--green); font-size: 14px; display: none; }
+
+  /* COMMUNITY REVIEWS */
+  .reviews-section { margin-top: 36px; }
+  .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .reviews-header h2 { font-size: 18px; color: #fff; }
+  .reviews-count { font-size: 12px; color: var(--muted); }
+  .review-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .review-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .review-product { font-weight: 700; font-size: 14px; color: #fff; flex: 1; margin-right: 8px; }
+  .review-status { font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; }
+  .status-HALAL { background: rgba(34,197,94,0.15); color: var(--green); }
+  .status-HARAM { background: rgba(239,68,68,0.15); color: var(--red); }
+  .status-MASHBOOH { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .review-stars { color: var(--amber); font-size: 14px; margin-bottom: 6px; }
+  .review-comment { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 8px; }
+  .review-meta { font-size: 11px; color: rgba(255,255,255,0.25); }
+  .load-more-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 14px; font-family: Georgia, serif; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+  .load-more-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .no-reviews { text-align: center; padding: 30px; color: var(--muted); font-size: 14px; font-style: italic; }
+
+  .disclaimer { text-align: center; font-size: 11px; color: rgba(255,255,255,0.18); margin-top: 24px; line-height: 1.7; }
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: rgba(255,255,255,0.6); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -89,6 +121,7 @@
 </style>
 </head>
 <body>
+
 <header>
   <div class="lang-toggle">
     <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
@@ -108,8 +141,8 @@
 
 <div class="container">
   <div class="mode-toggle">
-    <button class="mode-btn active" id="btn-text" onclick="setMode('text')" id="mode-text-btn">Type Ingredients</button>
-    <button class="mode-btn" id="btn-image" onclick="setMode('image')" id="mode-image-btn">Upload Photo</button>
+    <button class="mode-btn active" id="btn-text" onclick="setMode('text')">Type Ingredients</button>
+    <button class="mode-btn" id="btn-image" onclick="setMode('image')">Upload Photo</button>
   </div>
 
   <div id="text-panel">
@@ -136,68 +169,73 @@
   <button id="check-btn" onclick="runCheck()">Check Halal Status</button>
   <div id="error-box" class="error-box"></div>
   <div id="result-box" class="result-box"></div>
+
+  <!-- COMMUNITY REVIEWS -->
+  <div class="reviews-section" id="reviews-section">
+    <div class="reviews-header">
+      <h2 id="reviews-title">Community Reviews</h2>
+      <span class="reviews-count" id="reviews-count"></span>
+    </div>
+    <div id="reviews-list"><div class="no-reviews" id="no-reviews-text">No reviews yet. Be the first!</div></div>
+    <button class="load-more-btn" id="load-more-btn" onclick="loadMoreReviews()" style="display:none;" id="load-more-btn">Load more</button>
+  </div>
+
   <p class="disclaimer" id="disclaimer-text">For guidance only. Consult a certified Islamic scholar or look for official Halal certification: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapore), HMC/HFA (UK)</p>
 </div>
 
 <script>
+  var SUPABASE_URL = 'https://qwpdgdvjgnjfzutsrxnd.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3cGRnZHZqZ25qZnp1dHNyeG5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1ODg5NTIsImV4cCI6MjA5NDE2NDk1Mn0.XRQcALe8YDvyNbNc8nRw8HKd3HllK4JIIB0eA1y66qY';
+
   var currentMode = 'text';
   var currentLang = 'en';
   var imageData = null;
   var imageMediaType = null;
   var lastResult = null;
+  var selectedRating = 0;
+  var reviewsOffset = 0;
+  var reviewsLimit = 5;
 
-  var TRANSLATIONS = {
+  var T = {
     en: {
       headerSub: 'AI-powered Islamic dietary compliance - free to use',
-      modeText: 'Type Ingredients',
-      modeImage: 'Upload Photo',
-      lblIngredients: 'Paste Ingredients List',
-      lblPhoto: 'Upload Ingredients Label Photo',
-      dzTitle: 'Tap to upload or take photo',
-      dzSub: 'JPG, PNG, WEBP supported',
-      removeBtn: 'Remove and Retake',
-      checkBtn: 'Check Halal Status',
-      analysing: 'Analysing...',
+      modeText: 'Type Ingredients', modeImage: 'Upload Photo',
+      lblIngredients: 'Paste Ingredients List', lblPhoto: 'Upload Ingredients Label Photo',
+      dzTitle: 'Tap to upload or take photo', dzSub: 'JPG, PNG, WEBP supported',
+      removeBtn: 'Remove and Retake', checkBtn: 'Check Halal Status', analysing: 'Analysing...',
       placeholder: 'e.g. Sugar, Wheat Flour, Vegetable Oil, Emulsifier (E471), Natural Flavouring, Gelatin...',
-      confidence: 'Confidence',
-      flagged: 'Flagged Ingredients',
-      permissible: 'Permissible Ingredients',
-      shareWa: 'Share via WhatsApp',
-      copyResult: 'Copy Result',
-      copied: 'Result copied!',
-      errNoText: 'Please paste an ingredients list first.',
-      errNoImage: 'Please upload a photo of the ingredients label.',
+      confidence: 'Confidence', flagged: 'Flagged Ingredients', permissible: 'Permissible Ingredients',
+      shareWa: 'Share via WhatsApp', copyResult: 'Copy Result', copied: 'Result copied!',
+      errNoText: 'Please paste an ingredients list first.', errNoImage: 'Please upload a photo.',
       errConnection: 'Connection error. Please try again.',
       disclaimer: 'For guidance only. Consult a certified Islamic scholar or look for official Halal certification: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapore), HMC/HFA (UK)',
-      waMsg: 'Halal Checker Result\n\nStatus: ',
-      waEnd: '\n\nCheck your food at our Halal Checker app!',
-      aiLang: 'English'
+      reviewTitle: 'Leave a Review', reviewProduct: 'Product name (e.g. Cadbury Dairy Milk)',
+      reviewComment: 'Your comment (e.g. Bought at Tesco, confirmed halal)',
+      reviewCountry: 'Your country (e.g. UK, Indonesia, Malaysia)',
+      submitReview: 'Submit Review', reviewSuccess: 'Thank you for your review!',
+      communityReviews: 'Community Reviews', loadMore: 'Load more reviews',
+      noReviews: 'No reviews yet. Be the first!', rateProduct: 'Rate this product:',
+      waMsg: 'Halal Checker Result\n\nStatus: ', waEnd: '\n\nCheck your food at Halal Checker!'
     },
     id: {
       headerSub: 'Pemeriksa kehalalan makanan bertenaga AI - gratis digunakan',
-      modeText: 'Ketik Bahan-bahan',
-      modeImage: 'Upload Foto',
-      lblIngredients: 'Tempel Daftar Bahan-bahan',
-      lblPhoto: 'Upload Foto Label Bahan-bahan',
-      dzTitle: 'Ketuk untuk upload atau ambil foto',
-      dzSub: 'JPG, PNG, WEBP didukung',
-      removeBtn: 'Hapus dan Foto Ulang',
-      checkBtn: 'Cek Status Halal',
-      analysing: 'Sedang menganalisis...',
+      modeText: 'Ketik Bahan-bahan', modeImage: 'Upload Foto',
+      lblIngredients: 'Tempel Daftar Bahan-bahan', lblPhoto: 'Upload Foto Label Bahan-bahan',
+      dzTitle: 'Ketuk untuk upload atau ambil foto', dzSub: 'JPG, PNG, WEBP didukung',
+      removeBtn: 'Hapus dan Foto Ulang', checkBtn: 'Cek Status Halal', analysing: 'Sedang menganalisis...',
       placeholder: 'cth. Gula, Tepung Terigu, Minyak Sayur, Pengemulsi (E471), Perisa Alami, Gelatin...',
-      confidence: 'Tingkat Keyakinan',
-      flagged: 'Bahan yang Dipertanyakan',
-      permissible: 'Bahan yang Diperbolehkan',
-      shareWa: 'Bagikan via WhatsApp',
-      copyResult: 'Salin Hasil',
-      copied: 'Hasil disalin!',
-      errNoText: 'Harap tempel daftar bahan-bahan terlebih dahulu.',
-      errNoImage: 'Harap upload foto label bahan-bahan.',
+      confidence: 'Tingkat Keyakinan', flagged: 'Bahan yang Dipertanyakan', permissible: 'Bahan yang Diperbolehkan',
+      shareWa: 'Bagikan via WhatsApp', copyResult: 'Salin Hasil', copied: 'Hasil disalin!',
+      errNoText: 'Harap tempel daftar bahan-bahan terlebih dahulu.', errNoImage: 'Harap upload foto label.',
       errConnection: 'Kesalahan koneksi. Silakan coba lagi.',
       disclaimer: 'Hanya sebagai panduan. Konsultasikan dengan ulama bersertifikat atau cari sertifikasi Halal resmi: MUI (Indonesia), JAKIM (Malaysia), MUIS (Singapura), HMC/HFA (UK)',
-      waMsg: 'Hasil Cek Halal\n\nStatus: ',
-      waEnd: '\n\nCek makanan kamu di aplikasi Halal Checker kami!',
-      aiLang: 'Bahasa Indonesia'
+      reviewTitle: 'Tulis Ulasan', reviewProduct: 'Nama produk (cth. Indomie Goreng)',
+      reviewComment: 'Komentar Anda (cth. Beli di Alfamart, sudah terkonfirmasi halal)',
+      reviewCountry: 'Negara Anda (cth. Indonesia, Malaysia, Singapura)',
+      submitReview: 'Kirim Ulasan', reviewSuccess: 'Terima kasih atas ulasan Anda!',
+      communityReviews: 'Ulasan Komunitas', loadMore: 'Muat lebih banyak ulasan',
+      noReviews: 'Belum ada ulasan. Jadilah yang pertama!', rateProduct: 'Beri nilai produk ini:',
+      waMsg: 'Hasil Cek Halal\n\nStatus: ', waEnd: '\n\nCek makanan kamu di Halal Checker!'
     }
   };
 
@@ -209,7 +247,7 @@
 
   function setLang(lang) {
     currentLang = lang;
-    var t = TRANSLATIONS[lang];
+    var t = T[lang];
     document.getElementById('btn-en').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
     document.getElementById('btn-id').className = 'lang-btn' + (lang === 'id' ? ' active' : '');
     document.getElementById('hdr-sub').textContent = t.headerSub;
@@ -223,6 +261,8 @@
     document.getElementById('check-btn').textContent = t.checkBtn;
     document.getElementById('ingredients-text').placeholder = t.placeholder;
     document.getElementById('disclaimer-text').textContent = t.disclaimer;
+    document.getElementById('reviews-title').textContent = t.communityReviews;
+    document.getElementById('no-reviews-text').textContent = t.noReviews;
     document.documentElement.lang = lang;
   }
 
@@ -285,9 +325,8 @@
 
   function runCheck() {
     clearResult();
-    var t = TRANSLATIONS[currentLang];
+    var t = T[currentLang];
     var content;
-
     if (currentMode === 'text') {
       var text = document.getElementById('ingredients-text').value.trim();
       if (!text) { showError(t.errNoText); return; }
@@ -312,9 +351,7 @@
       lastResult = result;
       renderResult(result);
     })
-    .catch(function(err) {
-      showError(t.errConnection);
-    })
+    .catch(function() { showError(t.errConnection); })
     .finally(function() {
       btn.disabled = false;
       btn.textContent = t.checkBtn;
@@ -322,7 +359,7 @@
   }
 
   function renderResult(r) {
-    var t = TRANSLATIONS[currentLang];
+    var t = T[currentLang];
     var cfg = STATUS_CFG[r.status] || STATUS_CFG.MASHBOOH;
     var html = '<div style="background:' + cfg.bg + '; border:1px solid ' + cfg.border + '; border-radius:16px; padding:26px 22px; animation:fadeIn 0.4s ease;">';
     html += '<div class="verdict-badge"><div class="verdict-pill" style="border-color:' + cfg.color + '; background:' + cfg.bg + ';">';
@@ -360,38 +397,180 @@
     html += '<button class="share-btn" onclick="copyResult()">' + t.copyResult + '</button>';
     html += '</div></div>';
 
+    // Review form
+    html += '<div class="review-form" id="review-form">';
+    html += '<h3>' + t.reviewTitle + '</h3>';
+    html += '<div style="font-size:13px; color:var(--muted); margin-bottom:10px;">' + t.rateProduct + '</div>';
+    html += '<div class="star-row" id="star-row">';
+    for (var i = 1; i <= 5; i++) {
+      html += '<span class="star" onclick="setRating(' + i + ')" onmouseover="hoverRating(' + i + ')" onmouseout="unhoverRating()" data-val="' + i + '">&#9733;</span>';
+    }
+    html += '</div>';
+    html += '<div class="review-inputs">';
+    html += '<input class="review-input" id="review-product" type="text" placeholder="' + t.reviewProduct + '" />';
+    html += '<textarea class="review-input" id="review-comment" placeholder="' + t.reviewComment + '"></textarea>';
+    html += '<input class="review-input" id="review-country" type="text" placeholder="' + t.reviewCountry + '" />';
+    html += '</div>';
+    html += '<button class="submit-review-btn" onclick="submitReview()">' + t.submitReview + '</button>';
+    html += '<div class="review-success" id="review-success">' + t.reviewSuccess + '</div>';
+    html += '</div>';
+
     var box = document.getElementById('result-box');
     box.innerHTML = html;
     box.style.display = 'block';
+    selectedRating = 0;
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setRating(val) {
+    selectedRating = val;
+    updateStars(val);
+  }
+
+  function hoverRating(val) { updateStars(val); }
+  function unhoverRating() { updateStars(selectedRating); }
+
+  function updateStars(val) {
+    var stars = document.querySelectorAll('.star');
+    stars.forEach(function(s) {
+      var v = parseInt(s.getAttribute('data-val'));
+      s.className = 'star' + (v <= val ? ' active' : '');
+    });
+  }
+
+  function submitReview() {
+    if (!lastResult) return;
+    var t = T[currentLang];
+    var productName = document.getElementById('review-product').value.trim();
+    var comment = document.getElementById('review-comment').value.trim();
+    var country = document.getElementById('review-country').value.trim();
+
+    if (!selectedRating) { alert(currentLang === 'id' ? 'Harap pilih rating bintang' : 'Please select a star rating'); return; }
+    if (!productName) { alert(currentLang === 'id' ? 'Harap isi nama produk' : 'Please enter a product name'); return; }
+
+    var btn = document.querySelector('.submit-review-btn');
+    btn.disabled = true;
+    btn.textContent = currentLang === 'id' ? 'Mengirim...' : 'Submitting...';
+
+    var ingredients = currentMode === 'text' ? document.getElementById('ingredients-text').value.trim() : '[Photo upload]';
+
+    fetch(SUPABASE_URL + '/rest/v1/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        product_name: productName,
+        ingredients: ingredients,
+        halal_status: lastResult.status,
+        rating: selectedRating,
+        comment: comment || null,
+        country: country || null,
+        language: currentLang
+      })
+    })
+    .then(function(resp) {
+      if (resp.ok) {
+        document.getElementById('review-success').style.display = 'block';
+        btn.style.display = 'none';
+        reviewsOffset = 0;
+        loadReviews();
+      } else {
+        throw new Error('Failed');
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = t.submitReview;
+      alert(currentLang === 'id' ? 'Gagal mengirim ulasan. Coba lagi.' : 'Failed to submit review. Please try again.');
+    });
+  }
+
+  function loadReviews() {
+    reviewsOffset = 0;
+    fetch(SUPABASE_URL + '/rest/v1/reviews?select=*&order=created_at.desc&limit=' + reviewsLimit, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      renderReviews(data, false);
+      reviewsOffset = data.length;
+      document.getElementById('load-more-btn').style.display = data.length >= reviewsLimit ? 'block' : 'none';
+    })
+    .catch(function() {});
+  }
+
+  function loadMoreReviews() {
+    fetch(SUPABASE_URL + '/rest/v1/reviews?select=*&order=created_at.desc&limit=' + reviewsLimit + '&offset=' + reviewsOffset, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      renderReviews(data, true);
+      reviewsOffset += data.length;
+      document.getElementById('load-more-btn').style.display = data.length >= reviewsLimit ? 'block' : 'none';
+    })
+    .catch(function() {});
+  }
+
+  function renderReviews(data, append) {
+    var t = T[currentLang];
+    var list = document.getElementById('reviews-list');
+    if (!append) list.innerHTML = '';
+
+    if (!data || data.length === 0) {
+      if (!append) list.innerHTML = '<div class="no-reviews" id="no-reviews-text">' + t.noReviews + '</div>';
+      return;
+    }
+
+    data.forEach(function(r) {
+      var stars = '';
+      for (var i = 1; i <= 5; i++) { stars += i <= r.rating ? '&#9733;' : '&#9734;'; }
+      var date = new Date(r.created_at).toLocaleDateString();
+      var card = document.createElement('div');
+      card.className = 'review-card';
+      card.innerHTML =
+        '<div class="review-card-header">' +
+        '<span class="review-product">' + escHtml(r.product_name) + '</span>' +
+        '<span class="review-status status-' + r.halal_status + '">' + r.halal_status + '</span>' +
+        '</div>' +
+        '<div class="review-stars">' + stars + '</div>' +
+        (r.comment ? '<div class="review-comment">' + escHtml(r.comment) + '</div>' : '') +
+        '<div class="review-meta">' + (r.country ? escHtml(r.country) + ' &middot; ' : '') + date + '</div>';
+      list.appendChild(card);
+    });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function copyResult() {
     if (!lastResult) return;
-    var t = TRANSLATIONS[currentLang];
     var r = lastResult;
-    var text = 'HALAL CHECKER RESULT\nStatus: ' + r.status + ' (' + r.confidence + ')\n' + r.summary + '\n';
-    if (r.flagged && r.flagged.length) {
-      r.flagged.forEach(function(f) { text += '\n- ' + f.ingredient + ': ' + f.reason; });
-    }
+    var text = 'HALAL CHECKER RESULT\nStatus: ' + r.status + ' (' + r.confidence + ')\n' + r.summary;
+    if (r.flagged && r.flagged.length) { r.flagged.forEach(function(f) { text += '\n- ' + f.ingredient + ': ' + f.reason; }); }
     if (r.advice) text += '\n\n' + r.advice;
     text += '\n\nChecked via Halal Checker app';
-    navigator.clipboard.writeText(text).then(function() { alert(t.copied); });
+    navigator.clipboard.writeText(text).then(function() { alert(T[currentLang].copied); });
   }
 
   function shareWhatsApp() {
     if (!lastResult) return;
-    var t = TRANSLATIONS[currentLang];
-    var r = lastResult;
-    var msg = encodeURIComponent(t.waMsg + r.status + '\n' + r.summary + t.waEnd);
+    var t = T[currentLang];
+    var msg = encodeURIComponent(t.waMsg + lastResult.status + '\n' + lastResult.summary + t.waEnd);
     window.open('https://wa.me/?text=' + msg, '_blank');
   }
 
-  // Auto-detect browser language
-  var browserLang = navigator.language || navigator.userLanguage || 'en';
-  if (browserLang.toLowerCase().startsWith('id')) {
-    setLang('id');
-  }
+  // Auto-detect language
+  var bl = navigator.language || navigator.userLanguage || 'en';
+  if (bl.toLowerCase().startsWith('id')) setLang('id');
+
+  // Load reviews on startup
+  loadReviews();
 </script>
 </body>
 </html>
